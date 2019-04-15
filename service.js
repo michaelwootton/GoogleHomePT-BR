@@ -31,6 +31,7 @@ module.exports = (app) => {
         userId: 'anonymous',
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
+      logger.info('messagepayload : ', message.messagePayload);
       webhook.send(message);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
