@@ -39,7 +39,8 @@ module.exports = (app) => {
       });
     })
       .then(function (result) {
-          const texto1, texto2 = '';
+          const texto1 = '';
+          const texto2 = '';
           texto1 = result.messagePayload.text;
           if (result.messagePayload.actions){
             texto2 = WebhookClient.actionsToText(result.messagePayload.actions,texto1);
