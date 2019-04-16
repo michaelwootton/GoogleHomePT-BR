@@ -44,7 +44,7 @@ module.exports = (app) => {
           var texto2 = '';
           texto1 = result.messagePayload.text;
           if (result.messagePayload.actions){
-            texto2 = messageModelUtil.actionsToText(result.messagePayload.actions,texto1);
+            let texto2 = messageModelUtil.actionsToText(result.messagePayload.actions,texto1);
             texto1 = '';
           }
           conv.ask(texto1+texto2);
