@@ -1,5 +1,5 @@
 const OracleBot = require('@oracle/bots-node-sdk');
-const { messageModelUtil } = require('.lib/MessageModel/messageModelUtil.js');
+const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const { dialogflow } = require('actions-on-google');
