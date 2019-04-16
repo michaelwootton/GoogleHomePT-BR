@@ -45,7 +45,7 @@ module.exports = (app) => {
           texto1 = result.messagePayload.text;
           logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
           if (result.messagePayload.actions){
-            texto2 = MessageModel.actionsToText(result.messagePayload.actions,texto1);
+            texto2 = actionsToText(result.messagePayload.actions,texto1);
             texto1 = '';
           }
           conv.ask(texto1+texto2);
@@ -53,6 +53,51 @@ module.exports = (app) => {
     return promise;
   })
   
+  function trailingPeriod(text) {
+    if (!text || (typeof text !== 'string')) {
+      return '';
+    }
+    return ((text.trim().endsWith('.') || text.trim().endsWith('?') || text.trim().endsWith(',')) ? text.trim() + ' ' : text.trim() + '. ');
+  }
+  
+  function actionToText(action, actionPrefix) {
+    var actionText = (actionPrefix ? actionPrefix + ' ' : '');
+    if (action.label) {
+      return actionText + action.label;
+    }
+    else {
+      switch (action.type) {
+      case 'postback':
+        break;
+      case 'call':
+        actionText += 'Chame o fone de numero ' + action.phoneNumber;
+        break;
+      case 'url':
+        actionText += 'Abra a URL ' + action.url;
+        break;
+      case 'share':
+        actionText += 'Compartilhe a mensagem ';
+        break;
+      case 'location':
+        actionText += 'Compartilhe a localização';
+        break;
+      default:
+        break;
+      }
+    }
+    return actionText;
+  }
+  
+  function actionsToText(actions, prompt, actionPrefix) {
+    var actionsText = prompt || 'You can choose from the following actions: ';
+    actions.forEach(function (action, index) {
+      actionsText = actionsText + actionToText(action, actionPrefix);
+      if (index < actions.length - 1) {
+        actionsText = actionsText + ', ';
+      }
+    });
+    return trailingPeriod(actionsText);
+  }
   app.post('/bot/message', webhook.receiver());
 
   app.use('/fulfillment',bodyParser.json(),assistant);
