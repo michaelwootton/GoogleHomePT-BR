@@ -25,6 +25,7 @@ module.exports = (app) => {
   
   assistant.intent('Default Fallback Intent', (conv) => {
     logger.info('Got query : ', conv.query);
+    logger.info('qual a conversation total : ', conv);
     const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
       const message = {
