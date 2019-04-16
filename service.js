@@ -12,7 +12,7 @@ module.exports = (app) => {
 
   const webhook = new WebhookClient({
     channel: {
-      url: 'http://bots-connectors:8000/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
       secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
     }
   });
