@@ -1,5 +1,5 @@
 const OracleBot = require('@oracle/bots-node-sdk');
-const Util = require('@oracle/bots-node-sdk/util/MessageModel');
+const { messageModelUtil } = require('@oracle/bots-node-sdk/util');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const { dialogflow } = require('actions-on-google');
@@ -44,7 +44,7 @@ module.exports = (app) => {
           var texto2 = '';
           texto1 = result.messagePayload.text;
           if (result.messagePayload.actions){
-            texto2 = Util.actionsToText(result.messagePayload.actions,texto1);
+            texto2 = messageModelUtil.actionsToText(result.messagePayload.actions,texto1);
             texto1 = '';
           }
           conv.ask(texto1+texto2);
