@@ -39,7 +39,13 @@ module.exports = (app) => {
       });
     })
       .then(function (result) {
-          conv.ask(result.messagePayload.text);
+          const texto1, texto2 = '';
+          texto1 = result.messagePayload.text;
+          if (result.messagePayload.actions){
+            texto2 = WebhookClient.actionsToText(result.messagePayload.actions,texto1);
+            texto1 = '';
+          }
+          conv.ask(texto1+texto2);
         })
     return promise;
   })
