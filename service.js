@@ -48,7 +48,7 @@ module.exports = (app) => {
             texto2 = actionsToText(result.messagePayload.actions,texto1);
             texto1 = '';
           }
-          conv.ask(texto1+texto2);
+          conv.ask('<speak>'+texto1+texto2+'</speak>');
         })
     return promise;
   })
