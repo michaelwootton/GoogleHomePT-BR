@@ -2,7 +2,7 @@ const OracleBot = require('@oracle/bots-node-sdk');
 const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
-const { dialogflow } = require('actions-on-google');
+const { dialogflow, SignIn } = require('actions-on-google');
 const assistant = dialogflow();
 
 module.exports = (app) => {
@@ -27,6 +27,11 @@ module.exports = (app) => {
   assistant.intent('Default Fallback Intent', (conv) => {
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
+
+    logger.info('Vai entrar no fluxo de Signin');
+    conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+    logger.info('saiu do fluxo de Signin');
+
     const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
       const message = {
@@ -53,6 +58,20 @@ module.exports = (app) => {
     return promise;
   })
   
+  assistant.intent('PERMISSION',(conv, params, signin) => {
+    logger.info('Recebi o retorno via treatuser e vou verificar o userid');
+
+    // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
+    if (signin.status === 'OK') {
+     //   userpayload = conv.user.profile.payload;
+        conv.ask('Agora eu tenho os seus detalhes, ${userpayload.name}. O que voce quer fazer a seguir?');
+        logger.info('Account Linking rolou, dados de profile são: ');
+    } else {
+        conv.ask('Não poderei Salvar seus dados servidor EPM e nome, mas o que vc deseja fazer a seguir');
+        logger.info('Account Linking Não rolou');
+    }
+  }); // treatuser
+
   function trailingPeriod(text) {
     if (!text || (typeof text !== 'string')) {
       return '';
