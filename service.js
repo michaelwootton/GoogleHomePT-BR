@@ -3,7 +3,7 @@ const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const { dialogflow, SignIn } = require('actions-on-google');
-const assistant = dialogflow();
+const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
 
 module.exports = (app) => {
   const logger = console;
