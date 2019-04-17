@@ -58,7 +58,7 @@ module.exports = (app) => {
     return promise;
   })
   
-  assistant.intent('PERMISSION',(conv, params, signin) => {
+  assistant.intent('SIGN_IN',(conv, params, signin) => {
     logger.info('Recebi o retorno via treatuser e vou verificar o userid');
 
     // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
