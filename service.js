@@ -63,10 +63,12 @@ module.exports = (app) => {
 
     // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
     if (signin.status === 'OK') {
-     //   userpayload = conv.user.profile.payload;
+     userpayload = conv.user.profile.payload;
      logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
-     logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload));
-     conv.ask('Agora eu tenho os seus detalhes, ${userpayload.name}. O que voce quer fazer a seguir?');
+     logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload.given_name));
+     UserId = userpayload.sub;
+     Username = userpayload.given_name;
+     conv.ask('Agora eu tenho os seus detalhes, ${userpayload.given_name}. O que voce quer fazer a seguir?');
     } else {
         conv.ask('Não poderei Salvar seus dados servidor EPM e nome, mas o que vc deseja fazer a seguir');
         logger.info('Account Linking Não rolou');
