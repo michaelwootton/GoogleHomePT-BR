@@ -31,11 +31,21 @@ module.exports = (app) => {
     logger.info('Vai entrar no fluxo de Signin');
     conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
     logger.info('saiu do fluxo de Signin');
-
+    if (conv.user.profile.payload.given_name === '') {
+      UserId = 'anonymus';
+    } else {
+      userpayload = conv.user.profile.payload;
+      UserId = userpayload.sub;
+      logger.info('Account Linking rolou no default fallback, dados de Conv são: ', JSON.stringify(conv));
+      logger.info('Account Linking rolou no default fallback, dados do given_name: ', JSON.stringify(conv.user.profile.payload.given_name));      UserId = userpayload.sub;
+      logger.info('Estes é o user ID do Conv: ', UserId);
+      Username = userpayload.given_name;
+      logger.info('Este é o nome do usuario do Conv no Fallback: ', Username);
+    }
     const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
       const message = {
-        userId: 'anonymous',
+        userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       logger.info('messagepayload : ', message.messagePayload);
@@ -68,6 +78,7 @@ module.exports = (app) => {
       logger.info('Account Linking rolou, dados de Conv são: ', JSON.stringify(conv));
       logger.info('Account Linking rolou, dados de params são: ', JSON.stringify(params));
       logger.info('Estes são os dados do given_name: ', JSON.stringify(conv.user.profile.payload.given_name));      UserId = userpayload.sub;
+      UserId = userpayload.sub;
       logger.info('Estes é o user ID do Conv: ', UserId);
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv: ', Username);
