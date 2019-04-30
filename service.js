@@ -34,6 +34,8 @@ module.exports = (app) => {
       logger.info('saiu do fluxo de Signin');
       UserId = 'anonymus';
     } else {
+      userlocale = conv.user.locale;
+      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
       userpayload = conv.user.profile.payload;
       UserId = userpayload.sub;
       logger.info('Account Linking rolou no default fallback, dados de Conv são: ', JSON.stringify(conv));
@@ -73,6 +75,8 @@ module.exports = (app) => {
 
     // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
     if (signin.status === 'OK') {
+      userlocale = conv.user.locale;
+      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
       userpayload = conv.user.profile.payload;
       logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
       logger.info('Account Linking rolou, dados de Conv são: ', JSON.stringify(conv));
