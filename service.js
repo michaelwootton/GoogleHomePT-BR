@@ -65,8 +65,9 @@ module.exports = (app) => {
     if (signin.status === 'OK') {
       userpayload = conv.user.profile.payload;
       logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
-      logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload.given_name));
-      UserId = userpayload.sub;
+      logger.info('Account Linking rolou, dados de Conv são: ', JSON.stringify(conv));
+      logger.info('Account Linking rolou, dados de params são: ', JSON.stringify(params));
+      logger.info('Estes são os dados do given_name: ', JSON.stringify(conv.user.profile.payload.given_name));      UserId = userpayload.sub;
       logger.info('Estes é o user ID do Conv: ', UserId);
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv: ', Username);
