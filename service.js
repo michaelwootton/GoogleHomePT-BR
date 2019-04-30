@@ -10,7 +10,7 @@ module.exports = (app) => {
   OracleBot.init(app, {
     logger,
   });
-
+  // dados do webhook (Channel do PBCS em Portugues)
   const webhook = new WebhookClient({
     channel: {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
@@ -25,12 +25,34 @@ module.exports = (app) => {
 
   
   assistant.intent('Default Fallback Intent', (conv) => {
+    userlocale = conv.user.locale;
+    logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+    if (userlocale === 'pt-BR') {
+      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
+      webhook.channel.secret = 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
+    }
+    else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
+      webhook.channel.secret = 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+    }  
+    else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
+      webhook.channel.secret = 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+    }
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 
     if (conv.user.profile.payload.given_name === '') {
       logger.info('Vai entrar no fluxo de Signin');
-      conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+      if (userlocale === 'pt-BR') {
+        conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+      }
+      else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+        conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
+      }  
+      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+        conv.ask(new SignIn('To get the details of your Google Account, like name and emaik, answer Yes'));
+      }
       logger.info('saiu do fluxo de Signin');
       UserId = 'anonymus';
     } else {
@@ -86,11 +108,26 @@ module.exports = (app) => {
       logger.info('Estes é o user ID do Conv: ', UserId);
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv: ', Username);
-      conv.ask('Olá ' + Username + ', o que posso fazer por vc ?');
+      if (userlocale === 'pt-BR') {
+        conv.ask('Olá ' + Username + ', o que posso fazer por vc ?');
+      }
+      else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+        conv.ask('Hola ' + Username + ', que puedo hacer para ayudar?');
+      }
+      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+        conv.ask('Hi ' + Username + ', what can I do to help?');
+      }
     } else {
       UserId = 'anonymus';
-      conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações'
-      + ', o que posso fazer por vc ?');
+      if (userlocale === 'pt-BR') {
+        conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações');
+      }
+      else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+        conv.ask('Hola, como no diste tus datos, voy a tener que pedir el proceso algunas informaciones');
+      }
+      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+        conv.ask('Hi, as you did not let me access your details, during the process I will have to ask for some information');
+      }
     }
  
    
@@ -113,16 +150,48 @@ module.exports = (app) => {
       case 'postback':
         break;
       case 'call':
-        actionText += 'Chame o fone de numero ' + action.phoneNumber;
+        if (userlocale === 'pt-BR') {
+          actionText += 'Chame o fone de numero ' + action.phoneNumber;
+        }
+        else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+          actionText += 'Llame el telefono con numero ' + action.phoneNumber;
+        }
+        else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+          actionText += 'Call the telephone with number ' + action.phoneNumber;
+        }
         break;
       case 'url':
-        actionText += 'Abra a URL ' + action.url;
+        if (userlocale === 'pt-BR') {
+          actionText += 'Abra a URL ' + action.url;
+        }
+        else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+          actionText += 'Abra el sitio URL ' + action.url;
+        }
+        else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+          actionText += 'Open the URL ' + action.url;
+        }
         break;
       case 'share':
-        actionText += 'Compartilhe a mensagem ';
+        if (userlocale === 'pt-BR') {
+          actionText += 'Compartilhe a mensagem ';
+        }
+        else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+          actionText += 'Compartille el mensaje ';
+        }  
+        else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+          actionText += 'Share the Message ';
+        }              
         break;
       case 'location':
-        actionText += 'Compartilhe a localização';
+        if (userlocale === 'pt-BR') {
+          actionText += 'Compartilhe a localização ';
+        }
+        else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+          actionText += 'Compartille la ubicación ';
+        }  
+        else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+          actionText += 'Share the location ';        
+        }              
         break;
       default:
         break;
@@ -132,7 +201,15 @@ module.exports = (app) => {
   }
   
   function actionsToText(actions, prompt, actionPrefix) {
-    var actionsText = prompt || 'You can choose from the following actions: ';
+    if (userlocale === 'pt-BR') {
+      var actionsText = prompt || 'Voce pode escolher das seguintes ações: ';
+    }
+    else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+      var actionsText = prompt || 'Tu puedes escojer de las seguientes opciones: ';
+    }
+    else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+      var actionsText = prompt || 'You can choose from the following actions: ';
+    }
     actions.forEach(function (action, index) {
       actionsText = actionsText + actionToText(action, actionPrefix);
       if (index < actions.length - 1) {
