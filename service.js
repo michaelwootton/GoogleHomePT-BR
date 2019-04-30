@@ -76,7 +76,7 @@ module.exports = (app) => {
     const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
       const message = {
-        userId: UserId;
+        userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       logger.info('messagepayload : ', message.messagePayload);
