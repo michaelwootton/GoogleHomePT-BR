@@ -67,8 +67,10 @@ module.exports = (app) => {
      logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
      logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload.given_name));
      UserId = userpayload.sub;
+     logger.info('Estes é o user ID do Conv: ', UserId);
      Username = userpayload.given_name;
-     conv.ask('Agora eu tenho os seus detalhes, ${userpayload.given_name}. O que voce quer fazer a seguir?');
+     logger.info('Este é o nome do usuario do Conv: ', Username);
+     conv.ask('Agora eu tenho os seus detalhes, ' + Username + '. O que voce quer fazer a seguir?');
     } else {
         conv.ask('Não poderei Salvar seus dados servidor EPM e nome, mas o que vc deseja fazer a seguir');
         logger.info('Account Linking Não rolou');
