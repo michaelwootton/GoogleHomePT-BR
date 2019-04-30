@@ -63,18 +63,41 @@ module.exports = (app) => {
 
     // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
     if (signin.status === 'OK') {
-     userpayload = conv.user.profile.payload;
-     logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
-     logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload.given_name));
-     UserId = userpayload.sub;
-     logger.info('Estes é o user ID do Conv: ', UserId);
-     Username = userpayload.given_name;
-     logger.info('Este é o nome do usuario do Conv: ', Username);
-     conv.ask('Agora eu tenho os seus detalhes, ' + Username + '. O que voce quer fazer a seguir?');
+      userpayload = conv.user.profile.payload;
+      logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
+      logger.info('Estes são os dados do Conv: ', JSON.stringify(conv.user.profile.payload.given_name));
+      UserId = userpayload.sub;
+      logger.info('Estes é o user ID do Conv: ', UserId);
+      Username = userpayload.given_name;
+      logger.info('Este é o nome do usuario do Conv: ', Username);
     } else {
-        conv.ask('Não poderei Salvar seus dados servidor EPM e nome, mas o que vc deseja fazer a seguir');
-        logger.info('Account Linking Não rolou');
+      UserId = 'anonymus';
     }
+    const promise = new Promise(function (resolve, reject) {
+      const MessageModel = webhook.MessageModel();
+      const message = {
+        userId: UserId;
+        messagePayload: MessageModel.textConversationMessage(conv.query)
+      };
+      logger.info('messagepayload : ', message.messagePayload);
+      webhook.send(message);
+      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+        resolve(message);
+      });
+    })
+      .then(function (result) {
+          var texto1 = '';
+          var texto2 = '';
+          texto1 = result.messagePayload.text;
+          logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
+          if (result.messagePayload.actions){
+            texto2 = actionsToText(result.messagePayload.actions,texto1);
+            texto1 = '';
+          }
+          conv.ask('<speak>'+texto1+texto2+'</speak>');
+        })
+    return promise;
+   
   }); // treatuser
 
   function trailingPeriod(text) {
