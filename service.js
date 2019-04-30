@@ -140,5 +140,6 @@ module.exports = (app) => {
   app.post('/bot/message', webhook.receiver());
 
   app.use('/fulfillment',bodyParser.json(),assistant);
+ 
   app.post('/fulfillment', assistant );
 }
