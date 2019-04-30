@@ -28,10 +28,10 @@ module.exports = (app) => {
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 
-    logger.info('Vai entrar no fluxo de Signin');
-    conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
-    logger.info('saiu do fluxo de Signin');
     if (conv.user.profile.payload.given_name === '') {
+      logger.info('Vai entrar no fluxo de Signin');
+      conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+      logger.info('saiu do fluxo de Signin');
       UserId = 'anonymus';
     } else {
       userpayload = conv.user.profile.payload;
@@ -82,33 +82,13 @@ module.exports = (app) => {
       logger.info('Estes é o user ID do Conv: ', UserId);
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv: ', Username);
+      conv.ask('Olá ' + Username + ', o que posso fazer por vc ?');
     } else {
       UserId = 'anonymus';
+      conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações'
+      + ', o que posso fazer por vc ?');
     }
-    const promise = new Promise(function (resolve, reject) {
-      const MessageModel = webhook.MessageModel();
-      const message = {
-        userId: UserId,
-        messagePayload: MessageModel.textConversationMessage(conv.query)
-      };
-      logger.info('messagepayload : ', message.messagePayload);
-      webhook.send(message);
-      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-        resolve(message);
-      });
-    })
-      .then(function (result) {
-          var texto1 = '';
-          var texto2 = '';
-          texto1 = result.messagePayload.text;
-          logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
-          if (result.messagePayload.actions){
-            texto2 = actionsToText(result.messagePayload.actions,texto1);
-            texto1 = '';
-          }
-          conv.ask('<speak>'+texto1+texto2+'</speak>');
-        })
-    return promise;
+ 
    
   }); // treatuser
 
