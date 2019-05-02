@@ -28,16 +28,22 @@ module.exports = (app) => {
     userlocale = conv.user.locale;
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
     if (userlocale === 'pt-BR') {
-      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
-      webhook.channel.secret = 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
+      channel= {
+         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+         secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+      }
     }
     else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
-      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
-      webhook.channel.secret = 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+      channel = {
+          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+      }
     }  
     else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-      webhook.channel.url = 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
-      webhook.channel.secret = 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+      channel = {
+          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+      }    
     }
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
@@ -73,7 +79,7 @@ module.exports = (app) => {
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       logger.info('messagepayload : ', message.messagePayload);
-      webhook.send(message);
+      webhook.send(message, channel);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
       });
