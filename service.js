@@ -88,7 +88,7 @@ module.exports = (app) => {
       };
       logger.info('messagepayload : ', message.messagePayload);
 
-      webhook.send(message, {channel});
+      webhook.send(message, channel);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
       });
