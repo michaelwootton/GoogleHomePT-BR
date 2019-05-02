@@ -90,17 +90,16 @@ module.exports = (app) => {
 
       const webhook = new WebhookClient({
         channel: channeloc
-        }
       });
     
       webhook
         .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
         .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
         .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
-        
+
       logger.info('messagepayload : ', message.messagePayload);
 
-      webhook.send(message, channeloc);
+      webhook.send(message);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
       });
