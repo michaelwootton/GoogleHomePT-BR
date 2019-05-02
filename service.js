@@ -79,6 +79,7 @@ module.exports = (app) => {
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       logger.info('messagepayload : ', message.messagePayload);
+      logger.info('Channel utilizado : ', channel);
       webhook.send(message, channel);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
