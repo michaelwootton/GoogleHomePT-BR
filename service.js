@@ -25,26 +25,7 @@ module.exports = (app) => {
 
   
   assistant.intent('Default Fallback Intent', (conv) => {
-    userlocale = conv.user.locale;
-    logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
-    if (userlocale === 'pt-BR') {
-      channel= {
-         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-         secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
-      }
-    }
-    else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
-      channel = {
-          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
-          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
-      }
-    }  
-    else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-      channel = {
-          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
-          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
-      }    
-    }
+    
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 
@@ -74,12 +55,39 @@ module.exports = (app) => {
     }
     const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
+      userlocale = conv.user.locale;
+      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+      const channel= {
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+      };
+      if (userlocale === 'pt-BR') {
+        channel= {
+          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+          secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+        };
+        logger.info('Channel utilizado : ', channel);
+      }
+      else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+        channel = {
+          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+        };
+        logger.info('Channel utilizado : ', channel);
+      }  
+      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+        channel = {
+          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+        };
+        logger.info('Channel utilizado : ', channel);
+      }
       const message = {
         userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       logger.info('messagepayload : ', message.messagePayload);
-      logger.info('Channel utilizado : ', channel);
+
       webhook.send(message, channel);
       webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
         resolve(message);
