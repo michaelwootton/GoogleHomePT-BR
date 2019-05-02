@@ -57,7 +57,7 @@ module.exports = (app) => {
       const MessageModel = webhook.MessageModel();
       userlocale = conv.user.locale;
       logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
-      const channel= {
+      var channel= {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
         secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
       };
