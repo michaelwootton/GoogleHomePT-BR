@@ -11,22 +11,6 @@ module.exports = (app) => {
     logger,
   });
   // dados do webhook (Channel do PBCS em Portugues)
-  const webhook = new WebhookClient({
-    // determine the channel config on incoming request from ODA
-    channel: (req) => {
-      // Promise is optional
-      return Promise.resolve({
-        url: 'https://...', // channel url specific to the incoming ODA request
-        secret: 'xyz...', // channel secret specific to the incomint ODA request
-      });
-    },
-  });
-  
-
-  webhook
-    .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
-    .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
-    .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
 
   
   assistant.intent('Default Fallback Intent', (conv) => {
@@ -58,35 +42,56 @@ module.exports = (app) => {
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv no Fallback: ', Username);
     }
-    const promise = new Promise(function (resolve, reject) {
-      const MessageModel = webhook.MessageModel();
-      userlocale = conv.user.locale;
-      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
-      var channeloc= {
+    userlocale = conv.user.locale;
+    logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+    var channeloc= {
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+    };
+    if (userlocale === 'pt-BR') {
+      channeloc= {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
         secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
       };
-      if (userlocale === 'pt-BR') {
-        channeloc= {
-          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-          secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
-        };
-        logger.info('Channel utilizado : ', channeloc);
-      }
-      else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
-        channeloc = {
-          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
-          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
-        };
-        logger.info('Channel utilizado : ', channeloc);
-      }  
-      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-        channeloc = {
-          url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
-          secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
-        };
-        logger.info('Channel utilizado : ', channeloc);
-      }
+      logger.info('Channel utilizado : ', channeloc);
+    }
+    else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+      channeloc = {
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+        secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+      };
+      logger.info('Channel utilizado : ', channeloc);
+    }  
+    else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
+      channeloc = {
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+        secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+      };
+      logger.info('Channel utilizado : ', channeloc);
+    }
+    
+    const webhook = new WebhookClient({
+            // determine the channel config on incoming request from ODA
+      channel: (req) => {
+        // Promise is optional
+        return Promise.resolve({
+          url: channeloc.url, // channel url specific to the incoming ODA request
+          secret: channeloc.secret, // channel secret specific to the incomint ODA request
+        });
+      },
+    });
+    
+  
+    webhook
+      .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
+      .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
+      .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
+  
+    app.post('/bot/message', webhook.receiver());
+
+    const promise = new Promise(function (resolve, reject) {
+      const MessageModel = webhook.MessageModel();
+
       const message = {
         userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
@@ -239,7 +244,7 @@ module.exports = (app) => {
     });
     return trailingPeriod(actionsText);
   }
-  app.post('/bot/message', webhook.receiver());
+  
 
   app.use('/fulfillment',bodyParser.json(),assistant);
  
