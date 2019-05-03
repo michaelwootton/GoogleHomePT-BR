@@ -27,7 +27,7 @@ module.exports = (app) => {
   .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
   .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
 
-  app.post('/bot/message', webhook.receiver((req, res) => {
+  app.post('/bot/message', webhook.receiver((req) => {
     // Message was received and validated from bot. Forward to user accordingly...    
     const { userId, messagePayload } = req.body;
     logger.info('entrou no result : ');
