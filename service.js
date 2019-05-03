@@ -4,7 +4,7 @@ const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const { dialogflow, SignIn } = require('actions-on-google');
 const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
-
+var userlocale = '';
 module.exports = (app) => {
   const logger = console;
   OracleBot.init(app, {
@@ -19,6 +19,7 @@ module.exports = (app) => {
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 
     if (conv.user.profile.payload.given_name === '') {
+      userlocale = conv.user.locale;
       logger.info('Vai entrar no fluxo de Signin');
       if (userlocale === 'pt-BR') {
         conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
@@ -147,6 +148,7 @@ module.exports = (app) => {
         conv.ask('Hi ' + Username + ', what can I do to help?');
       }
     } else {
+      userlocale = conv.user.locale;
       UserId = 'anonymus';
       if (userlocale === 'pt-BR') {
         conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações');
