@@ -28,7 +28,7 @@ module.exports = (app) => {
   .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
   .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
 
-  
+
   app.post('/bot/message', webhook.receiver((req) => {
     // Message was received and validated from bot. Forward to user accordingly...    
     const { userId, messagePayload } = req.body;
@@ -118,8 +118,8 @@ module.exports = (app) => {
       
     logger.info('messagepayload : ', message.messagePayload);
 
-    webhook.send(message, channeloc)
-    .then(() => res.send('ok'), e => res.status(400).send())
+    webhook.send(message, channeloc);
+    
 
   })
   
