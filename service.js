@@ -105,6 +105,7 @@ module.exports = (app) => {
       });
     })
       .then(function (result) {
+        logger.info('entrou no result : ');
           var texto1 = '';
           var texto2 = '';
           texto1 = result.messagePayload.text;
