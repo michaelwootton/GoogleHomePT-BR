@@ -114,8 +114,8 @@ module.exports = (app) => {
       logger.info('messagepayload : ', message.messagePayload);
 
       webhook.send(message, channeloc);
-      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-        resolve(message);
+      //webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+      //  resolve(message);
       });
     })
       .then(function (result) {
