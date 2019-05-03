@@ -90,12 +90,12 @@ module.exports = (app) => {
         logger.info('Message from chatbot:', message)
         var texto1 = '';
         var texto2 = '';
-        texto1 = result.messagePayload.text;
+        texto1 = message.messagePayload.text;
         
         logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
-        logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
-        if (result.messagePayload.actions){
-          texto2 = actionsToText(result.messagePayload.actions,texto1);
+        logger.info('actions : ', JSON.stringify(message.messagePayload.actions));
+        if (message.messagePayload.actions){
+          texto2 = actionsToText(message.messagePayload.actions,texto1);
           texto1 = '';
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
