@@ -86,7 +86,7 @@ module.exports = (app) => {
     webhook
       .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
       .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
-      .on(WebhookEvent.MESSAGE_RECEIVED, message => {
+/*      .on(WebhookEvent.MESSAGE_RECEIVED, message => {
         logger.info('Message from chatbot:', message)
         var texto1 = '';
         var texto2 = '';
@@ -100,7 +100,7 @@ module.exports = (app) => {
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
         conv.ask('<speak>'+texto1+texto2+'</speak>');
-      })
+     }) */
     app.post('/bot/message', webhook.receiver());
 
     const promise = new Promise(function (resolve, reject) {
@@ -119,6 +119,7 @@ module.exports = (app) => {
       });
     })
       .then(function (result) {
+        logger.info('Message from chatbot:', result)
           var texto1 = '';
           var texto2 = '';
           texto1 = result.messagePayload.text;
