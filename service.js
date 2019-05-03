@@ -11,7 +11,42 @@ module.exports = (app) => {
     logger,
   });
   // dados do webhook (Channel do PBCS em Portugues)
+ 
+  const webhook = new WebhookClient({
+    // determine the channel config on incoming request from ODA
+    channel: (req) => {
+       // Promise is optional
+      return Promise.resolve({
+        url: 'https://...', // channel url specific to the incoming ODA request
+        secret: 'xyz...', // channel secret specific to the incomint ODA request  
+      });
+    },
+  });
 
+  webhook
+  .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
+  .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
+
+  app.post('/bot/message', webhook.receiver((req, res) => {
+    // Message was received and validated from bot. Forward to user accordingly...    
+    const { userId, messagePayload } = req.body;
+    logger.info('entrou no result : ');
+    var texto1 = '';
+    var texto2 = '';
+    texto1 = messagePayload.text;
+    logger.info('antes de tratar actions : ');
+    logger.info('texto 1 antes de tratar actions : ', texto1);
+    logger.info('texto 1 antes de tratar actions stringify : ', JSON.stringify(texto1));
+    logger.info('actions : ', JSON.stringify(messagePayload.actions));
+    if (messagePayload.actions){
+      texto2 = actionsToText(messagePayload.actions,texto1);
+      texto1 = '';
+    }
+    logger.info('texto 2 ', texto2);
+    conv.ask('<speak>'+texto1+texto2+'</speak>');
+
+    // Message was received and validated from bot. Forward to user accordingly...
+  }))
   
   assistant.intent('Default Fallback Intent', (conv) => {
     
@@ -31,7 +66,8 @@ module.exports = (app) => {
       }
       logger.info('saiu do fluxo de Signin');
       UserId = 'anonymus';
-    } else {
+    } 
+    else {
       userlocale = conv.user.locale;
       logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
       userpayload = conv.user.profile.payload;
@@ -42,6 +78,7 @@ module.exports = (app) => {
       Username = userpayload.given_name;
       logger.info('Este é o nome do usuario do Conv no Fallback: ', Username);
     }
+    
     userlocale = conv.user.locale;
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
     var channeloc= {
@@ -70,57 +107,18 @@ module.exports = (app) => {
       logger.info('Channel utilizado : ', channeloc);
     }
     
-    const webhook = new WebhookClient({
-            // determine the channel config on incoming request from ODA
-      channel: (req) => {
-        // Promise is optional
-        return Promise.resolve({
-          url: channeloc.url, // channel url specific to the incoming ODA request
-          secret: channeloc.secret, // channel secret specific to the incomint ODA request
-        });
-      },
-    });
-    
-  
-    webhook
-      .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
-      .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
-      
-  
-    app.post('/bot/message', webhook.receiver());
+    const MessageModel = webhook.MessageModel();
 
-    const promise = new Promise(function (resolve, reject) {
-      const MessageModel = webhook.MessageModel();
-
-      const message = {
+    const message = {
         userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
-      };
+    };
       
-      logger.info('messagepayload : ', message.messagePayload);
+    logger.info('messagepayload : ', message.messagePayload);
 
-      webhook.send(message, channeloc);
-      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-        resolve(message);
-      });
-    })
-      .then(function (result) {
-        logger.info('entrou no result : ');
-          var texto1 = '';
-          var texto2 = '';
-          texto1 = result.messagePayload.text;
-          logger.info('antes de tratar actions : ');
-          logger.info('texto 1 antes de tratar actions : ', texto1);
-          logger.info('texto 1 antes de tratar actions stringify : ', JSON.stringify(texto1));
-          logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
-          if (result.messagePayload.actions){
-            texto2 = actionsToText(result.messagePayload.actions,texto1);
-            texto1 = '';
-          }
-          logger.info('texto 2 ', texto2);
-          conv.ask('<speak>'+texto1+texto2+'</speak>');
-        })
-    return promise;
+    webhook.send(message, channeloc)
+    .then(() => res.send('ok'), e => res.status(400).send())
+
   })
   
   assistant.intent('SIGN_IN',(conv, params, signin) => {
