@@ -116,7 +116,7 @@ module.exports = (app) => {
       webhook.send(message, channeloc);
       //webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
       //  resolve(message);
-      });
+      //});
     })
       .then(function (result) {
         logger.info('Message from chatbot:', result)
