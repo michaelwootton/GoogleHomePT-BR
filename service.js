@@ -86,21 +86,8 @@ module.exports = (app) => {
     webhook
       .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
       .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
-/*      .on(WebhookEvent.MESSAGE_RECEIVED, message => {
-        logger.info('Message from chatbot:', message)
-        var texto1 = '';
-        var texto2 = '';
-        texto1 = message.messagePayload.text;
-        
-        logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
-        logger.info('actions : ', JSON.stringify(message.messagePayload.actions));
-        if (message.messagePayload.actions){
-          texto2 = actionsToText(message.messagePayload.actions,texto1);
-          texto1 = '';
-        }
-        logger.info('texto 2 ', JSON.stringify(texto2));
-        conv.ask('<speak>'+texto1+texto2+'</speak>');
-     }) */
+      .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
+
     app.post('/bot/message', webhook.receiver());
 
     const promise = new Promise(function (resolve, reject) {
@@ -114,9 +101,9 @@ module.exports = (app) => {
       logger.info('messagepayload : ', message.messagePayload);
 
       webhook.send(message, channeloc);
-      //webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-      //  resolve(message);
-      //});
+      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+        resolve(message);
+      });
     })
       .then(function (result) {
         logger.info('Message from chatbot:', result)
