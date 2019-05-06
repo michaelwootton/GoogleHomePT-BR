@@ -2,15 +2,66 @@ const OracleBot = require('@oracle/bots-node-sdk');
 const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
+// google
+const PubSub = require('pubsub-js');
+PubSub.immediateExceptions = true;
 const { dialogflow, SignIn } = require('actions-on-google');
 const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
 var userlocale = '';
+
 module.exports = (app) => {
   const logger = console;
+  // this will add body-parser
   OracleBot.init(app, {
     logger,
   });
   // dados do webhook (Channel do PBCS em Portugues)
+
+  const webhook = new WebhookClient({
+    // determine the channel config on incoming request from ODA
+    channel: (req) => {
+      console.log('Here', req.params);
+      const { locale } = req.params;
+      var url, secret;
+
+      switch(locale) {
+        case 'es':
+          // ...
+           url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
+           secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+           logger.info('Channel being used-ES : ', url);		  
+        case 'pt':
+          // ...
+           url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
+           secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
+           logger.info('Channel being used-PT : ', url);		  
+          break;
+      }
+      return {
+        url,
+        secret,
+      };
+    },
+  });
+
+    
+  webhook
+  .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
+  .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message));
+  // .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
+
+  // Need pub/sub storage
+
+  // https://my.ngrok.io/bot/message/es-ES <=== configure this in ODA per channel/locale
+  app.post('/bot/message/:locale', webhook.receiver((req, res) => {
+    const { locale } = req.params;
+    res.send(200);
+     const body = req.body;
+     const userID = body.userId;
+     this.logger.info("Publishing to", userID);
+     PubSub.publish(userID, body);
+    
+  }));
 
   
   assistant.intent('Default Fallback Intent', (conv) => {
@@ -19,136 +70,135 @@ module.exports = (app) => {
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 
     if (conv.user.profile.payload.given_name === '') {
+// If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       userlocale = conv.user.locale;
-      logger.info('Vai entrar no fluxo de Signin');
+      logger.info('Starting Signin proccess');
       if (userlocale === 'pt-BR') {
+	  
+//     If locale is portugues from  Brasil, start sign-in informing the reason
+//     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
       }
       else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+//     If locale is Spanish, start sign-in informing the reason
+//     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
       }  
-      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-        conv.ask(new SignIn('To get the details of your Google Account, like name and emaik, answer Yes'));
-      }
-      logger.info('saiu do fluxo de Signin');
+      logger.info('Got out of Signin');
       UserId = 'anonymus';
     } else {
+// I have user given_name in message, so he already SIGNED IN and I have his name and email
       userlocale = conv.user.locale;
-      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+      logger.info('Account linking went ok, and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
       UserId = userpayload.sub;
-      logger.info('Account Linking rolou no default fallback, dados de Conv são: ', JSON.stringify(conv));
-      logger.info('Account Linking rolou no default fallback, dados do given_name: ', JSON.stringify(conv.user.profile.payload.given_name));      UserId = userpayload.sub;
-      logger.info('Estes é o user ID do Conv: ', UserId);
+      logger.info('I am in fefault Fallback - This is users User ID: ', UserId);
       Username = userpayload.given_name;
-      logger.info('Este é o nome do usuario do Conv no Fallback: ', Username);
+      logger.info('I am in fefault Fallback - This is users given_name: ', Username);
     }
     userlocale = conv.user.locale;
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+// set initial channel to portuguese CHATBOT	
     var channeloc= {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
       secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
     };
+// if portuguese - set channel to portuguese CHATBOT	
     if (userlocale === 'pt-BR') {
       channeloc= {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
         secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
       };
-      logger.info('Channel utilizado : ', channeloc);
+      logger.info('Channel being used: ', channeloc);
     }
+// if Spanish - set channel to Spanish CHATBOT	
     else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
       channeloc = {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
         secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
       };
-      logger.info('Channel utilizado : ', channeloc);
+      logger.info('Channel being used: ', channeloc);
     }  
-    else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-      channeloc = {
-        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
-        secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
-      };
-      logger.info('Channel utilizado : ', channeloc);
-    }
     
-    const webhook = new WebhookClient({
-            // determine the channel config on incoming request from ODA
-      channel: (req) => {
-        // Promise is optional
-        return Promise.resolve({
-          url: channeloc.url, // channel url specific to the incoming ODA request
-          secret: channeloc.secret, // channel secret specific to the incomint ODA request
-        });
-      },
-    });
+    // const webhook = new WebhookClient({
+    //         // determine the channel config on incoming request from ODA
+    //   channel: (req) => {
+    //     // Promise is optional
+    //     return Promise.resolve({
+    //       url: channeloc.url, // channel url specific to the incoming ODA request
+    //       secret: channeloc.secret, // channel secret specific to the incomint ODA request
+    //     });
+    //   },
+    // });
     
-  
-    webhook
-      .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
-      .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message))
-      .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
 
-    app.post('/bot/message', webhook.receiver());
+    // 
 
-    const promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
 
       const message = {
         userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
-      
-      logger.info('messagepayload : ', message.messagePayload);
-
-      webhook.send(message, channeloc);
-      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-        resolve(message);
-      });
-    })
-      .then(function (result) {
-        logger.info('Message from chatbot:', result)
-          var texto1 = '';
-          var texto2 = '';
-          texto1 = result.messagePayload.text;
+      var treatandsendtoGoogle =  function (msg, data) => {
+        logger.info('Message from chatbot:', data)
+        var texto1 = '';
+        var texto2 = '';
+        texto1 = data.messagePayload.text;
           
-          logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
-          logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
-          if (result.messagePayload.actions){
-            texto2 = actionsToText(result.messagePayload.actions,texto1);
+        logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
+        logger.info('actions : ', JSON.stringify(data.messagePayload.actions));
+// usually my messages sent from Chatbot have a text and some actions (options I give to the user)
+        if (data.messagePayload.actions){
+            texto2 = actionsToText(data.messagePayload.actions,texto1);
             texto1 = '';
-          }
-          logger.info('texto 2 ', JSON.stringify(texto2));
-          conv.ask('<speak>'+texto1+texto2+'</speak>');
-        })
-    return promise;
+        }
+        logger.info('texto 2 ', JSON.stringify(texto2));
+        conv.ask('<speak>'+texto1+texto2+'</speak>');
+      };		
+ 	  
+	  PubSub.subscribe(userId, treatandsendtoGoogle)	  
+      logger.info('messagepayload : ', message.messagePayload);
+      webhook.send(message, channeloc)
+        .catch(err => {
+                logger.info('Failed sending message to Bot');
+                conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
+                reject(err);
+                PubSub.unsubscribe(userId);
+        });
+      // webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+      //   resolve(message);
+      // });
+    })
   })
   
-  assistant.intent('SIGN_IN',(conv, params, signin) => {
-    logger.info('Recebi o retorno via treatuser e vou verificar o userid');
+// Intent SIGN_IN is used when I call the even named SIGN_In in the previous intent, when I dont have users ID
+// Account linking asks the user permission to use his data and returns a SIGN_IN Intent
+// If he answered YES to SIGN_IN REquest I have Signin.status = OK
 
-    // se l'input e' fine usa il metodo tell() che risponde e chiude la connessione
+  assistant.intent('SIGN_IN',(conv, params, signin) => {
+    logger.info('Received the return and will verify Userid');
+
+//If Status is OK then he gave permission to get his data
     if (signin.status === 'OK') {
       userlocale = conv.user.locale;
-      logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
+      logger.info('Account Linking went ok and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
-      logger.info('Account Linking rolou, dados de profile são: ', JSON.stringify(signin));
-      logger.info('Account Linking rolou, dados de Conv são: ', JSON.stringify(conv));
-      logger.info('Account Linking rolou, dados de params são: ', JSON.stringify(params));
-      logger.info('Estes são os dados do given_name: ', JSON.stringify(conv.user.profile.payload.given_name));      UserId = userpayload.sub;
+      logger.info('This is the users given_name: ', JSON.stringify(conv.user.profile.payload.given_name));
       UserId = userpayload.sub;
-      logger.info('Estes é o user ID do Conv: ', UserId);
+      logger.info('This is users UserID: ', UserId);
       Username = userpayload.given_name;
-      logger.info('Este é o nome do usuario do Conv: ', Username);
+//     If locale is portuguese from  Brasil, say 'Hi, username, What Can I do for you?'
       if (userlocale === 'pt-BR') {
         conv.ask('Olá ' + Username + ', o que posso fazer por vc ?');
       }
+//     If locale is Spanish, say 'Hi, username, What Can I do for you?'
       else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
         conv.ask('Hola ' + Username + ', que puedo hacer para ayudar?');
       }
-      else if ((userlocale === 'en-US') || (userlocale === 'en-GB')) {
-        conv.ask('Hi ' + Username + ', what can I do to help?');
-      }
     } else {
+//If Status is NOT OK then he didnt give permission to get his data
       userlocale = conv.user.locale;
       UserId = 'anonymus';
       if (userlocale === 'pt-BR') {
@@ -165,6 +215,7 @@ module.exports = (app) => {
    
   }); // treatuser
 
+// These are functions from OracleBot to convert message
   function trailingPeriod(text) {
     if (!text || (typeof text !== 'string')) {
       return '';
@@ -256,3 +307,5 @@ module.exports = (app) => {
  
   app.post('/fulfillment', assistant );
 }
+
+// can remove body-parser
