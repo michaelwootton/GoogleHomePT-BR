@@ -59,10 +59,10 @@ module.exports = (app) => {
   // https://my.ngrok.io/bot/message/es-ES <=== configure this in ODA per channel/locale
   app.post('/bot/message/:locale', webhook.receiver((req, res) => {
     const { locale } = req.params;
-    res.send(200);
+    res.sendStatus(200);
      const body = req.body;
      const userID = body.userId;
-     this.logger.info("Publishing to", userID);
+     logger.info("Publishing to", userID);
      PubSub.publish(userID, body);
     
   }));
