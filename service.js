@@ -162,11 +162,12 @@ module.exports = (app) => {
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
         conv.ask('<speak>'+texto1+texto2+'</speak>');
+        resolve();
       };		
  	  
 	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
-      resolve(webhook.send(message, channeloc))
+      webhook.send(message, channeloc)
       .catch(err => {
         logger.info('Failed sending message to Bot');
         conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
