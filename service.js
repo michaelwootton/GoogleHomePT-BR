@@ -158,7 +158,7 @@ module.exports = (app) => {
         conv.ask('<speak>'+texto1+texto2+'</speak>');
       };		
  	  
-	  PubSub.subscribe(userId, treatandsendtoGoogle)	  
+	  PubSub.subscribe(UserId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
       webhook.send(message, channeloc)
         .catch(err => {
