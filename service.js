@@ -161,6 +161,7 @@ module.exports = (app) => {
             texto1 = '';
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
+        PubSub.unsubscribe(UserId);
         conv.ask('<speak>'+texto1+texto2+'</speak>');
         resolve();
       };		
