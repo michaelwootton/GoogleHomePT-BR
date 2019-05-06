@@ -150,13 +150,13 @@ module.exports = (app) => {
         logger.info('Message from chatbot:', msg)
         var texto1 = '';
         var texto2 = '';
-        texto1 = data.messagePayload.text;
+        texto1 = data.body.messagePayload.text;
           
         logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
-        logger.info('actions : ', JSON.stringify(data.messagePayload.actions));
+        logger.info('actions : ', JSON.stringify(data.body.messagePayload.actions));
 // usually my messages sent from Chatbot have a text and some actions (options I give to the user)
-        if (data.messagePayload.actions){
-            texto2 = actionsToText(data.messagePayload.actions,texto1);
+        if (data.body.messagePayload.actions){
+            texto2 = actionsToText(data.body.messagePayload.actions,texto1);
             texto1 = '';
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
