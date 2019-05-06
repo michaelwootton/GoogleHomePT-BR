@@ -148,7 +148,7 @@ module.exports = (app) => {
       var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Data from chatbot:', data);
         logger.info('Message from chatbot:', msg)
-        logger.info('Conversa que veio do Google: ', conv.query)
+        logger.info('Conversa que veio do Google: ', conv)
         var texto1 = '';
         var texto2 = '';
         texto1 = data.body.messagePayload.text;
