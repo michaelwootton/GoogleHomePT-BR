@@ -171,7 +171,23 @@ module.exports = (app) => {
                 conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
                 reject(err);
                 PubSub.unsubscribe(userId);
-        });
+        })
+        .then(function (result) {
+          logger.info('Message from chatbot:', result)
+            var texto1 = '';
+            var texto2 = '';
+            texto1 = result.messagePayload.text;
+            
+            logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
+            logger.info('actions : ', JSON.stringify(result.messagePayload.actions));
+  // usually my messages sent from Chatbot have a text and some actions (options I give to the user)
+            if (result.messagePayload.actions){
+              texto2 = actionsToText(result.messagePayload.actions,texto1);
+              texto1 = '';
+            }
+            logger.info('texto 2 ', JSON.stringify(texto2));
+            conv.ask('<speak>'+texto1+texto2+'</speak>');
+          })
       // webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
       //   resolve(message);
       // });
