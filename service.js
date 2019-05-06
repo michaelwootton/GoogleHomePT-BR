@@ -162,6 +162,7 @@ module.exports = (app) => {
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
         conv.ask('<speak>'+texto1+texto2+'</speak>');
+        return promise;
       };		
  	  
 	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
