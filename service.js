@@ -138,7 +138,7 @@ module.exports = (app) => {
 
     // 
 
-    return new Promise(function (resolve, reject) {
+    const promise = new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
 
       const message = {
@@ -193,6 +193,7 @@ module.exports = (app) => {
       //   resolve(message);
       // });
     })
+    return promise;
   })
   
 // Intent SIGN_IN is used when I call the even named SIGN_In in the previous intent, when I dont have users ID
