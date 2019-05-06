@@ -63,7 +63,7 @@ module.exports = (app) => {
      const body = req.body;
      const userID = body.userId;
      logger.info("Publishing to", userID);
-     PubSub.publish(userID, body);
+     PubSub.publish(userID, req);
     
   }));
 
@@ -146,7 +146,8 @@ module.exports = (app) => {
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
       var treatandsendtoGoogle =  function (msg, data) {
-        logger.info('Message from chatbot:', data)
+        logger.info('Data from chatbot:', data);
+        logger.info('Message from chatbot:', msg)
         var texto1 = '';
         var texto2 = '';
         texto1 = data.messagePayload.text;
