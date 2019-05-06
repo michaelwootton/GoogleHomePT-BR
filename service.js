@@ -164,16 +164,20 @@ module.exports = (app) => {
         conv.ask('<speak>'+texto1+texto2+'</speak>');
       };		
  	  
-	  PubSub.subscribe(UserId, treatandsendtoGoogle)	  
+	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
       webhook.send(message, channeloc)
-        .catch(err => {
-                logger.info('Failed sending message to Bot');
-                conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
-                reject(err);
-                PubSub.unsubscribe(userId);
-        })
-        .then(function (result) {
+      .catch(err => {
+        logger.info('Failed sending message to Bot');
+        conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
+        reject(err);
+        PubSub.unsubscribe(userId);
+      })
+      webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+           resolve(message);
+      })
+    })      
+    .then(function (result) {
           logger.info('Message from chatbot:', result)
             var texto1 = '';
             var texto2 = '';
@@ -186,15 +190,14 @@ module.exports = (app) => {
               texto2 = actionsToText(result.messagePayload.actions,texto1);
               texto1 = '';
             }
-            logger.info('texto 2 ', JSON.stringify(texto2));
+            logger.info('texto 23 ', JSON.stringify(texto2));
             conv.ask('<speak>'+texto1+texto2+'</speak>');
           })
       // webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
       //   resolve(message);
       // });
+      return promise;
     })
-    return promise;
-  })
   
 // Intent SIGN_IN is used when I call the even named SIGN_In in the previous intent, when I dont have users ID
 // Account linking asks the user permission to use his data and returns a SIGN_IN Intent
