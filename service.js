@@ -141,7 +141,7 @@ module.exports = (app) => {
         userId: UserId,
         messagePayload: MessageModel.textConversationMessage(conv.query)
       };
-      var treatandsendtoGoogle =  function (msg, data) => {
+      var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Message from chatbot:', data)
         var texto1 = '';
         var texto2 = '';
