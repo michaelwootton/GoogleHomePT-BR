@@ -27,15 +27,15 @@ module.exports = (app) => {
       switch(locale) {
         case 'es': {
           // ...
-           url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
-           secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
+           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6';
+           secret= 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo';
            logger.info('Channel being used-ES : ', url);		  
            break;
         }   
         case 'pt': {
           // ...
-           url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
-           secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
+           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
+           secret= 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
            logger.info('Channel being used-PT : ', url);		  
           break;
         }  
