@@ -147,11 +147,9 @@ module.exports = (app) => {
           locale: userlocale			
         }
       };
-      const message = {
-        userId: UserId,
-        messagePayload: MessageModel.textConversationMessage(conv.query),
-        additionalProperties
-      };
+      var messagePayload = MessageModel.textConversationMessage(conv.query);
+      const message = _.assign({ userId, messagePayload }, additionalProperties);
+      
       var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Data from chatbot:', data);
         logger.info('Message from chatbot:', msg)
