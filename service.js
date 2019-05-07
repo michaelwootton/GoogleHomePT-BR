@@ -9,6 +9,7 @@ PubSub.immediateExceptions = true;
 const { dialogflow, SignIn } = require('actions-on-google');
 const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
 var userlocale = '';
+var userId = '';
 
 module.exports = (app) => {
   const logger = console;
@@ -62,9 +63,9 @@ module.exports = (app) => {
     const { locale } = req.params;
     res.sendStatus(200);
      const body = req.body;
-     const userID = body.userId;
-     logger.info("Publishing to", userID);
-     PubSub.publish(userID, req);
+     const userId = body.userId;
+     logger.info("Publishing to", userId);
+     PubSub.publish(userId, req);
     
   }));
 
@@ -90,16 +91,16 @@ module.exports = (app) => {
         conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
       }  
       logger.info('Got out of Signin');
-      UserId = 'anonymus';
+      userId = 'anonymus';
     } else {
 // I have user given_name in message, so he already SIGNED IN and I have his name and email
       userlocale = conv.user.locale;
       logger.info('Account linking went ok, and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
-      UserId = userpayload.sub;
+      userId = userpayload.sub;
       logger.info('I am in fefault Fallback - This is users User ID: ', UserId);
-      Username = userpayload.given_name;
-      logger.info('I am in fefault Fallback - This is users given_name: ', Username);
+      userName = userpayload.given_name;
+      logger.info('I am in fefault Fallback - This is users given_name: ', userName);
     }
     userlocale = conv.user.locale;
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
@@ -149,7 +150,7 @@ module.exports = (app) => {
         }
       };
       var messagePayload = MessageModel.textConversationMessage(conv.query);
-      const message = _.assign({ UserId, messagePayload }, additionalProperties);
+      const message = _.assign({ userId, messagePayload }, additionalProperties);
       logger.info('Message montado: ', JSON.stringify(message));
       var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Data from chatbot:', data);
@@ -167,12 +168,12 @@ module.exports = (app) => {
             texto1 = '';
         }
         logger.info('texto 2 ', JSON.stringify(texto2));
-        PubSub.unsubscribe(UserId);
+        PubSub.unsubscribe(userId);
         conv.ask('<speak>'+texto1+texto2+'</speak>');
         resolve();
       };		
  	  
-	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
+	    PubSub.subscribe(userId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
       logger.info('Additional Properties - profile : ', additionalProperties);      
       webhook.send(message, channeloc)
@@ -202,21 +203,21 @@ module.exports = (app) => {
       logger.info('Account Linking went ok and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
       logger.info('This is the users given_name: ', JSON.stringify(conv.user.profile.payload.given_name));
-      UserId = userpayload.sub;
-      logger.info('This is users UserID: ', UserId);
-      Username = userpayload.given_name;
+      userId = userpayload.sub;
+      logger.info('This is users userId: ', userId);
+      userName = userpayload.given_name;
 //     If locale is portuguese from  Brasil, say 'Hi, username, What Can I do for you?'
       if (userlocale === 'pt-BR') {
-        conv.ask('Olá ' + Username + ', o que posso fazer por vc ?');
+        conv.ask('Olá ' + userName + ', o que posso fazer por vc ?');
       }
 //     If locale is Spanish, say 'Hi, username, What Can I do for you?'
       else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
-        conv.ask('Hola ' + Username + ', que puedo hacer para ayudar?');
+        conv.ask('Hola ' + userName + ', que puedo hacer para ayudar?');
       }
     } else {
 //If Status is NOT OK then he didnt give permission to get his data
       userlocale = conv.user.locale;
-      UserId = 'anonymus';
+      userId = 'anonymus';
       if (userlocale === 'pt-BR') {
         conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações');
       }
