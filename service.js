@@ -2,6 +2,7 @@ const OracleBot = require('@oracle/bots-node-sdk');
 const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
+const _ = require('underscore');
 // google
 const PubSub = require('pubsub-js');
 PubSub.immediateExceptions = true;
@@ -147,9 +148,10 @@ module.exports = (app) => {
           locale: userlocale			
         }
       };
-      var messagePayload = MessageModel.textConversationMessage(conv.query);
-      const message = _.assign({ userId, messagePayload }, additionalProperties);
-      
+      var messagePayload = Messag
+      eModel.textConversationMessage(conv.query);
+      const message = _.assign({ UserId, messagePayload }, additionalProperties);
+
       var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Data from chatbot:', data);
         logger.info('Message from chatbot:', msg)
