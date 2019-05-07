@@ -148,8 +148,7 @@ module.exports = (app) => {
           locale: userlocale			
         }
       };
-      var messagePayload = Messag
-      eModel.textConversationMessage(conv.query);
+      var messagePayload = MessageModel.textConversationMessage(conv.query);
       const message = _.assign({ UserId, messagePayload }, additionalProperties);
 
       var treatandsendtoGoogle =  function (msg, data) {
