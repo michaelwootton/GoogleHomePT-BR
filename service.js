@@ -141,9 +141,16 @@ module.exports = (app) => {
     return new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
 
+      var additionalProperties = {
+        profile: {
+          clientType: "google",
+          locale: userlocale			
+        }
+      };
       const message = {
         userId: UserId,
-        messagePayload: MessageModel.textConversationMessage(conv.query)
+        messagePayload: MessageModel.textConversationMessage(conv.query),
+        additionalProperties
       };
       var treatandsendtoGoogle =  function (msg, data) {
         logger.info('Data from chatbot:', data);
@@ -168,6 +175,7 @@ module.exports = (app) => {
  	  
 	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
+      logger.info('Additional Properties - profile : ', message.additionalProperties);      
       webhook.send(message, channeloc)
       .catch(err => {
         logger.info('Failed sending message to Bot');
