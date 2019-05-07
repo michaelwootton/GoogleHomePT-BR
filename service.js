@@ -98,7 +98,7 @@ module.exports = (app) => {
       logger.info('Account linking went ok, and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
       userId = userpayload.sub;
-      logger.info('I am in fefault Fallback - This is users User ID: ', UserId);
+      logger.info('I am in fefault Fallback - This is users User ID: ', userId);
       userName = userpayload.given_name;
       logger.info('I am in fefault Fallback - This is users given_name: ', userName);
     }
