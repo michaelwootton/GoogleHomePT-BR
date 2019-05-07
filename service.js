@@ -174,7 +174,7 @@ module.exports = (app) => {
  	  
 	    PubSub.subscribe(UserId, treatandsendtoGoogle)	  
       logger.info('messagepayload : ', message.messagePayload);
-      logger.info('Additional Properties - profile : ', message.additionalProperties);      
+      logger.info('Additional Properties - profile : ', additionalProperties);      
       webhook.send(message, channeloc)
       .catch(err => {
         logger.info('Failed sending message to Bot');
