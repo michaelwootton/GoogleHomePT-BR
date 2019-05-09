@@ -22,7 +22,7 @@ module.exports = (app) => {
   const webhook = new WebhookClient({
     // determine the channel config on incoming request from ODA
     channel: (req) => {
-      console.log('Here', req.params);
+      logger.info('Here', req.params);
       const { locale } = req.params;
       var url = '';
       var secret = '';
@@ -79,6 +79,9 @@ module.exports = (app) => {
 // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       userlocale = conv.user.locale;
       logger.info('Starting Signin proccess');
+//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
+      if (userlocale === 'es-MX') {userlocale = 'es-419'};
+// set initial channel to portuguese CHATBOT	      
       if (userlocale === 'pt-BR') {
 	  
 //     If locale is portugues from  Brasil, start sign-in informing the reason
