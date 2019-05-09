@@ -80,7 +80,7 @@ module.exports = (app) => {
       userlocale = conv.user.locale;
       logger.info('Starting Signin proccess');
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
-      if (userlocale === 'es-MX') {userlocale = 'es-419'};
+      if ((userlocale === 'es-MX') || (userlocale === 'es-AR')) {userlocale = 'es-419'};
 // set initial channel to portuguese CHATBOT	      
       if (userlocale === 'pt-BR') {
 	  
