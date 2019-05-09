@@ -74,13 +74,16 @@ module.exports = (app) => {
     
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
+//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
+
+    userlocale = conv.user.locale;
+
+    if ((userlocale === 'es-MX') || (userlocale === 'es-AR')) {userlocale = 'es-419'};
+
 
     if (conv.user.profile.payload.given_name === '') {
 // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
-      userlocale = conv.user.locale;
       logger.info('Starting Signin proccess');
-//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
-      if ((userlocale === 'es-MX') || (userlocale === 'es-AR')) {userlocale = 'es-419'};
 // set initial channel to portuguese CHATBOT	      
       if (userlocale === 'pt-BR') {
 	  
@@ -97,7 +100,7 @@ module.exports = (app) => {
       userId = 'anonymus';
     } else {
 // I have user given_name in message, so he already SIGNED IN and I have his name and email
-      userlocale = conv.user.locale;
+
       logger.info('Account linking went ok, and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
       userId = userpayload.sub;
@@ -105,7 +108,6 @@ module.exports = (app) => {
       userName = userpayload.given_name;
       logger.info('I am in fefault Fallback - This is users given_name: ', userName);
     }
-    userlocale = conv.user.locale;
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
 // set initial channel to portuguese CHATBOT	
     var channeloc= {
