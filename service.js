@@ -239,16 +239,71 @@ module.exports = (app) => {
 
   assistant.intent('Cancel', (conv) => {
     userlocale = conv.user.locale;
+    userpayload = conv.user.profile.payload;
+    userId = userpayload.sub;
+    userName = userpayload.given_name;
+// set initial channel to portuguese CHATBOT	
+    var channeloc= {
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+    };
+// if portuguese - set channel to portuguese CHATBOT	
     if (userlocale === 'pt-BR') {
-          conv.close('Muito Obrigado, nos vemos em breve!');
+      channeloc= {
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+      };
+      logger.info('Channel being used: ', channeloc);
     }
-    else if (userlocale.substring(0,2) === 'es') {
-        conv.close('Muchas gracias, nos vemos pronto!');
-    }
-    else{
-        conv.close('Thanks, see you soon');
-    }
-  });  
+// if Spanish - set channel to Spanish CHATBOT	
+    else if ((userlocale === 'es-ES') || (userlocale === 'es-419')) {
+      channeloc = {
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
+        secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
+      };
+      logger.info('Channel being used: ', channeloc);
+    }  
+    return new Promise(function (resolve, reject) {
+      const MessageModel = webhook.MessageModel();
+
+      var additionalProperties = {
+        profile: {
+          clientType: "google",
+          locale: userlocale			
+        }
+      };
+      var messagePayload = MessageModel.textConversationMessage(conv.query);
+      const message = _.assign({ userId, messagePayload }, additionalProperties);
+      var treatandsendtoGoogle =  function (msg, data) {
+      var texto1 = '';
+      var texto2 = '';
+      texto1 = data.body.messagePayload.text;
+          
+// usually my messages sent from Chatbot have a text and some actions (options I give to the user)
+      if (data.body.messagePayload.actions){
+          texto2 = actionsToText(data.body.messagePayload.actions,texto1);
+          texto1 = '';
+      }
+        PubSub.unsubscribe(userId);
+        conv.close('<speak>'+texto1+texto2+'</speak>');
+        resolve();
+      };		
+ 	  
+	    PubSub.subscribe(userId, treatandsendtoGoogle)	  
+      webhook.send(message, channeloc)
+      .catch(err => {
+        logger.info('Failed sending message to Bot');
+        conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
+        reject(err);
+        PubSub.unsubscribe(userId);
+      })
+    });      
+
+      // webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
+      //   resolve(message);
+      // });
+    })
+ 
 // These are functions from OracleBot to convert message
   function trailingPeriod(text) {
     if (!text || (typeof text !== 'string')) {
