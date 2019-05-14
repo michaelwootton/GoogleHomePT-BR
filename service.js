@@ -75,7 +75,7 @@ module.exports = (app) => {
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
-    if (conv.query.text.toLowerCase() === 'cancel') {
+    if (conv.query.toLowerCase() === 'cancel') {
       if (userlocale === 'pt-BR') {
           conv.close('Muito Obrigado, nos vemos em breve!');
       }
