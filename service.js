@@ -154,7 +154,7 @@ module.exports = (app) => {
           locale: userlocale			
         }
       };
-      var messagePayload = MessageModel.textConversationMessage(conv.query);
+      var messagePayload = MessageModel.textConversationMessage('cancel');
       const message = _.assign({ userId, messagePayload }, additionalProperties);
       logger.info('Message montado: ', JSON.stringify(message));
       var treatandsendtoGoogle =  function (msg, data) {
