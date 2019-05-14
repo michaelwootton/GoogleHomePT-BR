@@ -76,21 +76,10 @@ module.exports = (app) => {
     logger.info('qual a conversation total : ', JSON.stringify(conv));
     logger.info('inicio de userlocale : ', userlocale.substring(0,2));
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
-    if (conv.query.toLowerCase() === 'termina') {
-      if (userlocale === 'pt-BR') {
-          conv.close('Muito Obrigado, nos vemos em breve!');
-      }
-      else if (userlocale.substring(0,2) === 'es') {
-        conv.close('Muchas gracias, nos vemos pronto!');
-      }
-      else if (userlocale.substring(0,2) === 'us') {
-        conv.close('Thanks, see you soon');
-      }
-
-    }
+  
     userlocale = conv.user.locale;
 
-    if ((userlocale === 'es-MX') || (userlocale === 'es-AR')) {userlocale = 'es-419'};
+    if (userlocale.substring(0,2) === 'es') {userlocale = 'es-419'};
 
 
     if (conv.user.profile.payload.given_name === '') {
@@ -249,6 +238,18 @@ module.exports = (app) => {
    
   }); // treatuser
 
+  assistant.intent('Cancel', (conv) => {
+    userlocale = conv.user.locale;
+    if (userlocale === 'pt-BR') {
+          conv.close('Muito Obrigado, nos vemos em breve!');
+    }
+    else if (userlocale.substring(0,2) === 'es') {
+        conv.close('Muchas gracias, nos vemos pronto!');
+    }
+    else{
+        conv.close('Thanks, see you soon');
+    };
+    
 // These are functions from OracleBot to convert message
   function trailingPeriod(text) {
     if (!text || (typeof text !== 'string')) {
