@@ -75,7 +75,18 @@ module.exports = (app) => {
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
+    if (conv.query.text.toLowerCase() === 'cancel') {
+      if (userlocale === 'pt-BR') {
+          conv.close('Muito Obrigado, nos vemos em breve!');
+      }
+      else if (userlocale.substring(0,2) === 'es') {
+        conv.close('Muchas gracias, nos vemos pronto!');
+      }
+      else if (userlocale.substring(0,2) === 'us') {
+        conv.close('Thanks, see you soon');
+      }
 
+    }
     userlocale = conv.user.locale;
 
     if ((userlocale === 'es-MX') || (userlocale === 'es-AR')) {userlocale = 'es-419'};
