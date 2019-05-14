@@ -74,6 +74,7 @@ module.exports = (app) => {
     
     logger.info('Got query : ', conv.query);
     logger.info('qual a conversation total : ', JSON.stringify(conv));
+    logger.info('inicio de userlocale : ', userlocale.substring(0,2));
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
     if (conv.query.toLowerCase() === 'termina') {
       if (userlocale === 'pt-BR') {
