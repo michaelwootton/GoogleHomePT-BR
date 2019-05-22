@@ -44,8 +44,8 @@ module.exports = (app) => {
         }   
         case 'pt': {
           // ...
-           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94';
-           secret= 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S';
+           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
+           secret= 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
            logger.info('Channel being used-PT : ', url);		  
           break;
         }  
@@ -137,14 +137,14 @@ module.exports = (app) => {
 // set initial channel to portuguese CHATBOT	
 // if locale qual English will use the Portuguese CHATBOT, this chatbot can treat English also.	
     var channeloc= {
-      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
-      secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
     };
 // if portuguese - set channel to portuguese CHATBOT	
     if (userlocale.substring(0,2) === 'pt') {
       channeloc= {
-        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
-        secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
       };
     }
 // if Spanish - set channel to Spanish CHATBOT	
@@ -267,14 +267,14 @@ module.exports = (app) => {
     logger.info('I am in Cancel Intent - This is users User ID: ', userId);
     // set initial channel to portuguese CHATBOT	
     var channeloc= {
-      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
-      secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
     };
 // if portuguese - set channel to portuguese CHATBOT	
     if (userlocale.substring(0,2) === 'pt') {
       channeloc= {
-        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
-        secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
+        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
       };
      }
 // if Spanish - set channel to Spanish CHATBOT	
