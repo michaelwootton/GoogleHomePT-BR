@@ -370,7 +370,7 @@ module.exports = (app) => {
           actionText += 'Compartilhe a mensagem ';
         }
         else if (userlocale.substring(0,2) === 'es') {
-          actionText += 'Compartille el mensaje ';
+          actionText += 'Comparte el mensaje ';
         }  
         else if (userlocale.substring(0,2) === 'en') {
           actionText += 'Share the Message ';
@@ -381,7 +381,7 @@ module.exports = (app) => {
           actionText += 'Compartilhe a localização ';
         }
         else if (userlocale.substring(0,2) === 'es')  {
-          actionText += 'Compartille la ubicación ';
+          actionText += 'Comparte la ubicación ';
         }  
         else if (userlocale.substring(0,2) === 'en')  {
           actionText += 'Share the location ';        
