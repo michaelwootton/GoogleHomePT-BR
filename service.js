@@ -7,7 +7,7 @@ const JSON = require('circular-json');
 const PubSub = require('pubsub-js');
 PubSub.immediateExceptions = true;
 const { dialogflow, SignIn } = require('actions-on-google');
-const assistant = dialogflow({debug: true, clientId:'4819215140-h19dtif7hddobc9moak4g5jgdumu7kce.apps.googleusercontent.com',});
+const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
 var userlocale = '';
 var userId = '';
 
